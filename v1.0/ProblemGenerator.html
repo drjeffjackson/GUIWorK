@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>GUIWorK: WeBWorK Problem Generation Front-End</title>
+    <link rel="stylesheet" type="text/css" href="GUIWorK.1.0.css" />
+    <script type="text/javascript" src="ProblemGenerator.1.0.js">
+    </script>
+  </head>
+
+  <body>
+
+    <div id="questionDiv">
+      <form onsubmit="return false;">
+	<fieldset>
+	  <legend>Question&nbsp;<span class="questionNum">1</span></legend>
+
+	  <select>
+	    <option selected="selected" disabled="disabled">Question type</option>
+	    <option>Multiple choice (radio button)</option>
+	    <option>Multiple choice (drop-down)</option>
+	  </select>
+	  
+	  <select style="float:right" onchange="actionMenu(this);">
+	    <option selected="selected" disabled="disabled">Action menu</option>
+	    <option>Add a blank question immediately after this one</option>
+	    <option>Add a blank question immediately before this one</option>
+	    <option>Duplicate this question</option>
+	    <option disabled="disabled">------------------</option>
+	    <option>Move this question earlier</option>
+	    <option>Move this question later</option>
+	    <option disabled="disabled">------------------</option>
+	    <option>Delete this question</option>
+	  </select>
+
+	  <p><label>Question:<br />
+	      <textarea class="textBox question"></textarea></label> 
+	  </p>
+	  <div>
+	    <p>
+	      <label><span class="letter">a</span>.&nbsp;<input type="text" class="inBox" /></label> 
+	      <button class="charButton" onclick="addAnswer(this);">+</button>
+	      <button class="charButton" onclick="delAnswer(this);">-</button> 
+	    </p>
+
+	    <p>
+	      <label><span class="letter">b</span>.&nbsp;<input type="text" class="inBox" /></label> 
+	      <button class="charButton" onclick="addAnswer(this);">+</button>
+	      <button class="charButton" onclick="delAnswer(this);">-</button> 
+	    </p>
+	  </div>
+	  <select class="selectAnswer">
+	    <option selected="selected" disabled="disabled">Select correct
+	      answer</option>
+	    <option>a.</option>
+	    <option>b.</option>
+	  </select>
+
+	  <p>
+	    <label>Solution (optional): <br />
+	      <textarea class="textBox solution"></textarea>
+	    </label>
+	  </p>
+	</fieldset>
+      </form>
+    </div>
+
+    <form onsubmit="return false;">
+      <fieldset>
+	<legend>Finalize</legend>
+	<button onclick="generatePGML(this);">Generate PGML code</button> 
+	<br />
+	<textarea id="outBox" class="outBox"></textarea>
+      </fieldset>
+    </form>
+  </body>
+</html>
