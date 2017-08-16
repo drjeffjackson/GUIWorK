@@ -8,9 +8,9 @@ Usage:
 - Generating a problem
   1. Browse (http:, not file:) to Generate.html.
   2. Create the problem set.  The familiar $...$ and $$...$$ are used to delimit LaTeX (\$ is recognized as an escaped dollar sign).
-     2.1 Select the type of each question from the drop-down menu.
-     2.2 Enter information defining the question and answer as directed (or questions and answers, if there are multiple parts).
-     2.3 Use the Action menu to create additional questions and/or delete questions.
+     1. Select the type of each question from the drop-down menu.
+     2. Enter information defining the question and answer as directed (or questions and answers, if there are multiple parts).
+     3. Use the Action menu to create additional questions and/or delete questions.
   3. Click the Generate PGML button in order to generate WeBWorK PGML code (and HTML representing the generation page).
   4. Copy the content of the textarea beneath the Generate PGML button (click in the textarea and, in Windows, type Ctrl-A Ctrl-C)
   5. Navigate WeBWorK to a problem editing page and paste into the edit textarea (click in the textarea, Ctrl-A Ctrl-V).
@@ -24,7 +24,7 @@ Usage:
   5. Click the button.  You will be directed to the edit screen for the appropriate version of GUIWorK.
   6. Paste into the new textarea (yes, you're pasting twice for now).
   7. Click the button.
-  8. You should see the page used to generate the problem.  Continue with step 2 of the generation process in order to edit the
+  8. You should see the page used to generate the problem.  Continue with step ii) of the generation process in order to edit the
      problem, regenerate the PGML, and update the problem in WeBWorK.
      
 Adding a new question type:
