@@ -29,7 +29,8 @@ Usage:
      
 Adding a new question type:
 
-- The folders mcrb and fitb contain the code for the two question types currently implement, multiple-choice (radio button) and
-  fill in the blank.  The comments in the .js code explain how to create files implementing a new question type.
-- Add the new question type to the menu in config.js.
-- Add file imports for the new question type to ProblemGenerator.html.
+- The folder mcrb contains the code for the multiple-choice (radio button) question type.  The comments in the mcrb.js code explain 
+  how to create files implementing a new question type.  Other folders, such as fitb, implement other question types and can also
+  be used as reference.
+- Once the code has been written, add the new question type to the menu in config.js following the pattern of other question types.
+- Add file imports for the new question type to ProblemGenerator.html following the pattern of other imports.
