@@ -55,7 +55,7 @@ GUIWorK.config.questionTypeMenu =
   },
   {
     text: "Multiple choice (drop-down)",
-    name: ""
+    name: "mcpu"
   },
   {
     text: "Fill in the blank",

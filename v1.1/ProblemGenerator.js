@@ -257,7 +257,9 @@ function generatePGML(button)
   outString += '"MathObjects.pl", \n';
   outString += '"PGchoicemacros.pl", \n';
   outString += '"parserRadioButtons.pl", \n';
-  outString += '"PGML.pl"); \n';
+  outString += '"parserPopUp.pl", \n';
+  outString += '"PGML.pl", \n';
+  outString += '); \n';
   outString += ' \n';
 
   // Allow each question type to perform initialization, such as resetting
