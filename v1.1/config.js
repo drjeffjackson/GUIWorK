@@ -58,6 +58,10 @@ GUIWorK.config.questionTypeMenu =
     name: "mcpu"
   },
   {
+    text: "Multiple choice (checkbox)",
+    name: "mccb"
+  },
+  {
     text: "Fill in the blank",
     name: "fitb"
   },

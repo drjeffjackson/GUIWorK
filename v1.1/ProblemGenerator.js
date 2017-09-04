@@ -393,12 +393,21 @@ function getQuestionTypePrefix(questionElt) {
 // input/text elements.
 function addInputValues(element) {
 
-  // Set the value attribute of every input/text element to its value.
+  // Set the value attribute of every input/text element to its value,
+  // and add a checked attribute to every input/checkbox that is checked.
   var inputs = element.getElementsByTagName("input");
   for (var i=0; i<inputs.length; i++) {
     var input = inputs[i];
-    if (input.getAttribute("type") == "text") {
+    var inputType = input.getAttribute("type");
+    if (inputType == "text") {
       input.setAttribute("value", input.value);    
+    }
+    else if (inputType == "checkbox") {
+      if (input.checked) {
+        input.setAttribute("checked", "checked");
+      } else if (input.hasAttribute("checked")) {
+        input.removeAttribute("checked");
+      }
     }
   }
 
