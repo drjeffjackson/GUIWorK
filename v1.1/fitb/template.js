@@ -1,6 +1,7 @@
 /**
  * GUIWorK fitb property contains all JavaScript code associated with
  * the fill-in-the-blank question type.
+ * Currently, supports (automatically) numeric, List, and string data types.
  * The code inherits from QuestionType.
  */ 
 GUIWorK.fitb = Object.create(GUIWorK.QuestionType.prototype);
@@ -31,7 +32,7 @@ GUIWorK.fitb.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
-    var stringList = new Array();
+    var stringList = new Array(); // Context strings for this question
 
     // If first call for a new problem generation, clear the contextStrings
     // array and tell WeBWorK to clear its strings from Context.
@@ -41,7 +42,7 @@ function PGgen(questionElt) {
       GUIWorK.fitb.firstPGgenCall = false;
     }
 
-    // Compile list of new non-numeric answers, saving them so that
+    // Compile list of new string answers, saving them so that
     // later questions will not attempt to also add them to context.
     // Throw error if any answers are blank.
     var answerElts = questionElt.getElementsByClassName("fitb_answer");
@@ -51,7 +52,21 @@ function PGgen(questionElt) {
         throw "Question " + nQuestion + " has a blank answer.";
       }
       if (isNaN(answer)) {
-        if (!GUIWorK.fitb.contextStrings.includes(answer)) {
+        // If list, add all strings in list to the context
+        if (GUIWorK.fitb.isList(answer)) {
+	   var words = answer.split(",");
+	   for (var w=0; w<words.length; w++) {
+	     var execArray = /[a-zA-Z]+/.exec(words[w]);
+	     if (execArray) {
+	        word = execArray[0];
+                if (!GUIWorK.fitb.contextStrings.includes(word)) {
+	           GUIWorK.fitb.contextStrings.push(word);
+		   stringList.push(word);
+                }
+             }
+           }
+	}
+	else if (!GUIWorK.fitb.contextStrings.includes(answer)) {
            GUIWorK.fitb.contextStrings.push(answer);
    	   stringList.push(answer);
 	}
@@ -105,7 +120,7 @@ function PGMLgen(questionElt) {
       blankText = '[_]';
     }
     else if (blankSizeText=="long") {
-      blankSizeText = '[________________________________________]';
+      blankText = '[________________________________________]';
     }
     var qaPairs = questionElt.getElementsByClassName("fitb_qaPair");
     for (var i=0; i<qaPairs.length; i++) {
@@ -117,7 +132,12 @@ function PGMLgen(questionElt) {
       outString += '{';
       var rawAnswer = qaPair.getElementsByClassName("fitb_answer")[0].value;
       if (isNaN(rawAnswer)) {
-        outString += "String('" + rawAnswer + "')";
+        if (GUIWorK.fitb.isList(rawAnswer)) {
+	  outString += "List('" + rawAnswer + "')";
+	}
+	else {
+          outString += "String('" + rawAnswer + "')";
+        }
       }
       else {
         outString += 'Real(' + rawAnswer + ')';
@@ -126,6 +146,13 @@ function PGMLgen(questionElt) {
     }    
     return outString;
   };
+
+/******* Utilities *******/
+
+GUIWorK.fitb.isList =
+function isList(answer) {
+  return /,/.test(answer);
+}
 
 /******* Event handlers ********/
 
