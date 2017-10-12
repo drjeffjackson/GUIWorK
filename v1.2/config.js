@@ -164,3 +164,62 @@ GUIWorK.QuestionType.prototype.PGMLgen =
 function PGMLgen(questionElt) {
   return '';
 };
+
+// ***********
+// Set abstract data type
+// Extends array with methods
+//   - diff(set): return Set containing all items in this Set that are
+//     not in the argument Set
+//   - union(set)
+//   - intersection(set)
+//   - include(item): push item on the end of the array iff item 
+//     is not already in this Set.
+// ***********
+
+GUIWorK.Set = function() {
+  Array.call(this);
+};
+
+GUIWorK.Set.prototype = Object.create(Array.prototype);
+
+GUIWorK.Set.prototype.include = 
+function include(item) {
+  if (!this.includes(item)) {
+    this.push(item);
+  }
+};
+
+GUIWorK.Set.prototype.union =
+function union(set) {
+  var retSet = new GUIWorK.Set();
+  for (var i=0; i<this.length; i++) {
+    retSet.push(set[i]);
+  }
+  for (var i=0; i<set.length; i++) {
+    retSet.include(set[i]);
+  }
+  return retSet;   
+};
+
+GUIWorK.Set.prototype.intersection = 
+function intersection(set) {
+  var retSet = new GUIWorK.Set();
+  for (var i=0; i<this.length; i++) {
+    if (set.includes(this[i])) {
+      retSet.push(this[i]);
+    }
+  }
+  return retSet;
+};
+
+GUIWorK.Set.prototype.diff = 
+function diff(set) {
+  var retSet = new GUIWorK.Set();
+  for (var i=0; i<this.length; i++) {
+    if (!set.includes(this[i])) {
+      retSet.push(this[i]);
+    }
+  }
+  return retSet;   
+};
+

@@ -1,13 +1,14 @@
+// TODO: Fix auto-variable extraction to ignore a longer
+// word, such as sin.
+
 /**
  * GUIWorK fitb property contains all JavaScript code associated with
  * the fill-in-the-blank question type.
- * Currently, supports (automatically) numeric, List, and string data types.
+ * Attempts to automatically extract strings from lists and one-letter
+ * variables from formulas and add these to appropriate Context.
  * The code inherits from QuestionType.
  */ 
 GUIWorK.fitb = Object.create(GUIWorK.QuestionType.prototype);
-
-// Maintain list of strings added to context (PG disallows re-adding)
-GUIWorK.fitb.contextStrings = new Array();
 
 // First call to PGgen for a new problem generation.
 GUIWorK.fitb.firstPGgenCall = true;
@@ -25,22 +26,22 @@ function init() {
   GUIWorK.fitb.firstPGgenCall = true;
 };
 
-  // Add all answer input strings
-  // and any additional specified strings
-  // to context.
+// Add all answer Strings, including those embedded within Lists,
+// along with any additional explicitly specified strings, to Context.
+// Also add all one-character variable names within formulas to Context.
 GUIWorK.fitb.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
-    var stringList = new Array(); // Context strings for this question
-    var varList = new Array();    // Variable names for this question
+    var stringList = new GUIWorK.Set(); // Context strings for this question
+    var varList = new GUIWorK.Set();    // Variable names for this question
 
     // If first call for a new problem generation, create empty string
     // and variable arrays and tell WeBWorK to clear its strings and
     // variables from Context.
     if (GUIWorK.fitb.firstPGgenCall) {
-      GUIWorK.fitb.contextStrings = new Array();
-      GUIWorK.fitb.variableStrings = new Array();
+      GUIWorK.fitb.contextStrings = new GUIWorK.Set();
+      GUIWorK.fitb.contextVariables = new GUIWorK.Set();
       outString += 'Context()->strings->are();\n';
       outString += 'Context()->variables->are();\n';
       GUIWorK.fitb.firstPGgenCall = false;
@@ -59,32 +60,28 @@ function PGgen(questionElt) {
         throw "Question " + nQuestion + " has a blank answer.";
       }
       if (selectAnswerType.value == "String" ||
-          (selectAnswerType.index == 0 && isLetters(answer))) {
-         GUIWorK.fitb.contextStrings.push(answer);
-	 stringList.push(answer);
+          (selectAnswerType.selectedIndex == 0 && GUIWorK.fitb.isLetters(answer))) {
+	 stringList.include(answer);
       }
-      // Find all of the (one-letter) variables in this formula
+      // Find all of the (one-letter) variables in this formula.
+      // In, e.g., sin(x)y, this will find x and y but not (any part of) sin.
       else if (selectAnswerType.value == "Formula") {
-         var letterRE = /[A-Za-z]/g;
+         var letterRE = /(^|[^A-Za-z])([A-Za-z])(?![A-Za-z])/g;
          var varArray;
 	 while ((varArray=letterRE.exec(answer)) != null) {
-	   var variable = varArray[0];
-  	   if (!GUIWorK.fitb.variableStrings.includes(variable)) {
-             GUIWorK.fitb.variableStrings.push(variable);
-	     varList.push(variable);
-	   }
+	   var variable = varArray[2];
+           varList.include(variable);
 	 }
       }
-      // Check for strings embedded within a list answer
+      // Check for strings embedded within a list answer.
       else if (selectAnswerType.value == "List") {
-        var elements = answer.split(",");
+        // Remove any paren chars around the list or sublists
+	// as well as splitting the list on commas
+        var elements = answer.split(/[,\(\[\{\}\]\)]/);
 	for (var w=0; w<elements.length; w++) {
            element = elements[w].trim();
-	   if (isLetters(element)) {
-              if (!GUIWorK.fitb.contextStrings.includes(element)) {
-                GUIWorK.fitb.contextStrings.push(element);
-	        stringList.push(element);
-              }
+	   if (GUIWorK.fitb.isLetters(element)) {
+	      stringList.include(element);
            }
 	}
       }
@@ -99,20 +96,24 @@ function PGgen(questionElt) {
       var additionalStringList = allowableText.split(/\s+|\s*,\s*/);
       for (var i=0; i<additionalStringList.length; i++) {
          var answer = additionalStringList[i];
-         if (!GUIWorK.fitb.contextStrings.includes(answer)) {
-           GUIWorK.fitb.contextStrings.push(answer);
-   	   stringList.push(answer);
- 	 }
+         stringList.include(answer);
       }
     }
-    // Add answer and variable strings to the context so that WeBWorK
-    // will recognize them.
+    // Reduce string and variable lists to those that are new
+    // to the overall problem and update the problem lists.
+    stringList = stringList.diff(GUIWorK.fitb.contextStrings);
+    varList = varList.diff(GUIWorK.fitb.contextVariables);
+    GUIWorK.fitb.contextStrings = GUIWorK.fitb.contextStrings.union(stringList);
+    GUIWorK.fitb.contextVariables = GUIWorK.fitb.contextVariables.union(varList);
+
+    // Add new answer and variable strings to the context so that
+    // WeBWorK will recognize them.
     if (stringList.length > 0) {
       outString += 'Context()->strings->add(';
       for (var i=0; i<stringList.length; i++) {
         outString += stringList[i] + '=>{},'; 
       }
-      outString += ');\n\n';
+      outString += ');\n';
     }
     if (varList.length > 0) {
       outString += 'Context()->variables->add(';
