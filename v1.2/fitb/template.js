@@ -1,5 +1,9 @@
 // TODO: Fix auto-variable extraction to ignore a longer
-// word, such as sin.
+//   word, such as sin.
+
+// TODO: Add options specific to data types.  For instance,
+//   for Formula, allow user to specify symbols representing
+//   functions (handy for sequence representation).
 
 /**
  * GUIWorK fitb property contains all JavaScript code associated with
@@ -85,14 +89,19 @@ function PGgen(questionElt) {
            }
 	}
       }
+      // Check for Matrix type. Matrix value needs to be wrapped in 
+      // Matrix Context, at least in ww_version 2.12.
+      else if (selectAnswerType.value == "Matrix") {
+        outString += 'Context("Matrix");\n';
+	outString += GUIWorK.fitb.matrixVar(nQuestion,i) 
+                     + ' = Matrix(' + answer + ');\n';
+        outString += 'Context("Numeric");\n';
+      }
     }
     // Add any additional legal-answer strings to the list of
     // recognized answers.
     var allowableText = questionElt.getElementsByClassName("fitb_allowableText")[0].value;
     if (!(/^[,|\s]*$/.test(allowableText))) { // not merely separator chars
-      if (/[^,A-Za-z\s]/.test(allowableText)) {
-        throw "Question " + nQuestion + " 'Additional allowable input' box contains bad character(s).";
-      }
       var additionalStringList = allowableText.split(/\s+|\s*,\s*/);
       for (var i=0; i<additionalStringList.length; i++) {
          var answer = additionalStringList[i];
@@ -144,7 +153,7 @@ function PGMLgen(questionElt) {
       blankText = '[_]';
     }
     else if (blankSizeText=="long") {
-      blankText = '[________________________________________]';
+      blankText = '[________________________________________________________]';
     }
     var qaPairs = questionElt.getElementsByClassName("fitb_qaPair");
     for (var i=0; i<qaPairs.length; i++) {
@@ -153,18 +162,22 @@ function PGMLgen(questionElt) {
       outString += encodeLaTeXMathModePGML(qaPair.getElementsByClassName("fitb_question")[0].value);
       outString += '\n  ';
       outString += blankText;
-      outString += '{';
       var rawAnswer = qaPair.getElementsByClassName("fitb_answer")[0].value;
       var selectAnswerType = qaPair.getElementsByClassName("fitb_ansType")[0];
 
       // If no answer type specified, let WeBWorK try to figure it out by
-      // simply quoting the answer.  Otherwise, pass answer as a quoted
+      // simply quoting the answer.  If Matrix type, use matrix variable
+      // constructed during PG generation.
+      // Otherwise, pass answer as a quoted
       // argument to the specified MathObjects constructor.
       if (selectAnswerType.selectedIndex == 0) {
-        outString += '"' + rawAnswer + '"';
+        outString += '{"' + rawAnswer + '"';
+      }
+      else if (selectAnswerType.value == "Matrix") {
+        outString += '*{' + GUIWorK.fitb.matrixVar(nQuestion,i);
       }
       else {
-        outString += selectAnswerType.value + '("' + rawAnswer + '")';
+        outString += '{' + selectAnswerType.value + '("' + rawAnswer + '")';
       }
       outString += '}\n\n';
     }    
@@ -176,6 +189,14 @@ function PGMLgen(questionElt) {
 GUIWorK.fitb.isLetters =
 function isLetters(answer) {
   return /^[A-Za-z]+$/.test(answer);
+}
+
+// Passed question number and 0-based number of the part of the
+// question, returns Perl variable unique to this question and part.
+GUIWorK.fitb.matrixVar = 
+function matrixVar(question, part) {
+  return "$fitb_matQ" + question 
+         + String.fromCharCode('a'.charCodeAt(0) + part);
 }
 
 /******* Event handlers ********/
