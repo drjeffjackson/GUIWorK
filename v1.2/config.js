@@ -193,7 +193,7 @@ GUIWorK.Set.prototype.union =
 function union(set) {
   var retSet = new GUIWorK.Set();
   for (var i=0; i<this.length; i++) {
-    retSet.push(set[i]);
+    retSet.push(this[i]);
   }
   for (var i=0; i<set.length; i++) {
     retSet.include(set[i]);
