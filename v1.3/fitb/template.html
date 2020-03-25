@@ -16,7 +16,7 @@
 	      <span class="fitb_letter">a</span>.<br />
               <label>Question:<br /><textarea class="fitb_question textBox"></textarea></label>
 	      <p>
-	      <select class="fitb_ansType" title="Data types supported by WeBWorK MathObjects. If not specified, we'll let WeBWorK try to auto-detect the type.">
+	      <select class="fitb_ansType" title="Data types supported by WeBWorK MathObjects. If not specified, we'll let WeBWorK try to auto-detect the type." onchange="GUIWorK.fitb.answerTypeMenu(this);">
 		<option selected="selected" disabled="disabled">Answer data type</option>
 		<option>Real</option>
 		<option>String</option>
@@ -30,6 +30,10 @@
 		<option>Union</option>
 		<option>Complex</option>
 		<option>Infinity</option>
+	      </select>
+	      <select style="display:none;" class="fitb_options_formula" onchange="GUIWorK.fitb.formulaOption(this);">
+		<option selected="selected" disabled="disabled">Formula answer-checking options</option>
+		<option name="fitb_opt_form_combinatorics">- Allow permutation/combination P(n,r) and C(n,r)</option>
 	      </select>
 	      </p>
               <label>Answer:<br /><input type="text" class="fitb_inBox fitb_answer" /></label>

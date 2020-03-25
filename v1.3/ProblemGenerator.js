@@ -166,30 +166,6 @@ function dupQuestion(actionSelect, questionElt, questionDiv) {
   } while (nextNode);
 }
 
-// Action: Delete the current question.
-function delQuestion(actionSelect, questionElt, questionDiv) {
-
-  // Do not delete if this is the only question.
-  if (questionDiv.childElementCount <= 1) {
-    alert("Cannot delete only remaining question.");
-    return;
-  }
-
-  // Capture sibling info before deleting this Node
-  var nextNode = questionElt.nextSibling;
-
-  // Remove this question
-  questionDiv.removeChild(questionElt);
-
-  // Decrement problem numbers of all subsequent problems.
-  do {
-    if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       deltaQuestionNum(nextNode, -1);
-    }
-    nextNode = nextNode.nextSibling;
-  } while (nextNode);
-}
-
 // Action: Move this question earlier.
 function moveQuestionEarlier(actionSelect, questionElt, questionDiv) {
   var nQuestion = getQuestionNum(questionElt);
@@ -229,6 +205,30 @@ function moveQuestionLater(actionSelect, questionElt, questionDiv) {
   else {
     moveQuestionEarlier(actionSelect, nextNode, questionDiv);
   }
+}
+
+// Action: Delete the current question.
+function delQuestion(actionSelect, questionElt, questionDiv) {
+
+  // Do not delete if this is the only question.
+  if (questionDiv.childElementCount <= 1) {
+    alert("Cannot delete only remaining question.");
+    return;
+  }
+
+  // Capture sibling info before deleting this Node
+  var nextNode = questionElt.nextSibling;
+
+  // Remove this question
+  questionDiv.removeChild(questionElt);
+
+  // Decrement problem numbers of all subsequent problems.
+  do {
+    if (nextNode.nodeType == Node.ELEMENT_NODE) {
+       deltaQuestionNum(nextNode, -1);
+    }
+    nextNode = nextNode.nextSibling;
+  } while (nextNode);
 }
 
 // Respond to selection in the question-type select
@@ -298,6 +298,7 @@ function generatePGML(button)
   outString += '"PGchoicemacros.pl", \n';
   outString += '"parserRadioButtons.pl", \n';
   outString += '"parserPopUp.pl", \n';
+  outString += '"parserFunction.pl", \n';
   outString += '"PGML.pl", \n';
   outString += '); \n';
   outString += ' \n';

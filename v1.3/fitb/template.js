@@ -1,3 +1,10 @@
+// TODO: FIX BUGS WITH OPTIONS.
+// -- The drop-down is repeated, so it can show + in some questions/parts
+//    and - in other questions/parts.
+// -- When we edit, the combinatorics option internal boolean is initialized
+//    to false rather than being picked up from the HTML doc.
+//    Can work around by manually selecting the option.
+
 // TODO: Fix auto-variable extraction to ignore a longer
 //   word, such as sin.
 
@@ -16,6 +23,9 @@ GUIWorK.fitb = Object.create(GUIWorK.QuestionType.prototype);
 
 // First call to PGgen for a new problem generation.
 GUIWorK.fitb.firstPGgenCall = true;
+
+// Various answer checker options with default values
+GUIWorK.fitb.opt_form_combinatorics = false;
 
 // Tell PGgen to clear the contextStrings array in preparation for
 // generating fresh code for the problem.
@@ -49,6 +59,17 @@ function PGgen(questionElt) {
       outString += 'Context()->strings->are();\n';
       outString += 'Context()->variables->are();\n';
       GUIWorK.fitb.firstPGgenCall = false;
+
+      // If combinatorics option selected, generate the functions.
+      if (GUIWorK.fitb.opt_form_combinatorics) {
+        outString += 'Context()->variables->add(n=>"Real",r=>"Real");\n';
+        outString += 'parserFunction("C(n,r)"=>"n!/((n-r)!*r!)");\n';
+        outString += 'parserFunction("P(n,r)"=>"n!/(n-r)!");\n';
+        GUIWorK.fitb.contextVariables.include('n');
+        GUIWorK.fitb.contextVariables.include('r');
+        GUIWorK.fitb.contextVariables.include('C');
+        GUIWorK.fitb.contextVariables.include('P');
+      }
     }
 
     // Compile list of new string answers, saving them so that
@@ -65,35 +86,35 @@ function PGgen(questionElt) {
       }
       if (selectAnswerType.value == "String" ||
           (selectAnswerType.selectedIndex == 0 && GUIWorK.fitb.isLetters(answer))) {
-	 stringList.include(answer);
+         stringList.include(answer);
       }
       // Find all of the (one-letter) variables in this formula.
       // In, e.g., sin(x)y, this will find x and y but not (any part of) sin.
       else if (selectAnswerType.value == "Formula") {
          var letterRE = /(^|[^A-Za-z])([A-Za-z])(?![A-Za-z])/g;
          var varArray;
-	 while ((varArray=letterRE.exec(answer)) != null) {
-	   var variable = varArray[2];
+         while ((varArray=letterRE.exec(answer)) != null) {
+           var variable = varArray[2];
            varList.include(variable);
-	 }
+         }
       }
       // Check for strings embedded within a list answer.
       else if (selectAnswerType.value == "List") {
         // Remove any paren chars around the list or sublists
-	// as well as splitting the list on commas
+        // as well as splitting the list on commas
         var elements = answer.split(/[,\(\[\{\}\]\)]/);
-	for (var w=0; w<elements.length; w++) {
+        for (var w=0; w<elements.length; w++) {
            element = elements[w].trim();
-	   if (GUIWorK.fitb.isLetters(element)) {
-	      stringList.include(element);
+           if (GUIWorK.fitb.isLetters(element)) {
+              stringList.include(element);
            }
-	}
+        }
       }
       // Check for Matrix type. Matrix value needs to be wrapped in 
       // Matrix Context, at least in ww_version 2.12.
       else if (selectAnswerType.value == "Matrix") {
         outString += 'Context("Matrix");\n';
-	outString += GUIWorK.fitb.matrixVar(nQuestion,i) 
+        outString += GUIWorK.fitb.matrixVar(nQuestion,i) 
                      + ' = Matrix(' + answer + ');\n';
         outString += 'Context("Numeric");\n';
       }
@@ -226,8 +247,8 @@ function addAnswer(addButton) {
     var nextNode = newQaDiv;
     do {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
-       	  letterSpan.textContent = nextLetter(letterSpan.textContent);
+          var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
+          letterSpan.textContent = nextLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
     } while (nextNode);
@@ -255,10 +276,48 @@ function delAnswer(delButton)
     // Decrement the letters of all subsequent answers.
     while (nextNode) {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
-       	  letterSpan.textContent = prevLetter(letterSpan.textContent);
+          var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
+          letterSpan.textContent = prevLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
     }
   };
 
+// Update UI in response to the answer type selected.
+// For instance, add option menu for Formula answer type.
+GUIWorK.fitb.answerTypeMenu = 
+function answerTypeMenu(answerTypeSelect) 
+  {
+    var aType = answerTypeSelect.value;
+    var formulaOptElt = 
+        answerTypeSelect.parentNode.
+          getElementsByClassName("fitb_options_formula")[0];
+    if (aType == "Formula") {
+      formulaOptElt.style.setProperty("display", "inline", "");
+    }
+    else {
+      formulaOptElt.style.setProperty("display", "none", "");      
+    }
+  };
+
+// A selection has been made in the formula options menu.
+// Toggle the selected option.
+GUIWorK.fitb.formulaOption =
+function formulaOption(formulaOptionSelect)
+  {
+    var selectedIndex = formulaOptionSelect.selectedIndex;
+    var formulaOptionName = 
+        formulaOptionSelect[selectedIndex].getAttribute("name");
+    if (formulaOptionName == "fitb_opt_form_combinatorics") {
+      GUIWorK.fitb.opt_form_combinatorics = !GUIWorK.fitb.opt_form_combinatorics;
+    }
+    // Update menu text to reflect status of option selection
+    var formulaOptionElt = formulaOptionSelect[selectedIndex];
+    var optionText = formulaOptionElt.textContent;
+    var leadingSymbol = GUIWorK.fitb.opt_form_combinatorics ? '+' : '-';
+    formulaOptionElt.textContent = 
+       leadingSymbol + optionText.slice(1,optionText.length);
+
+    // Reset the selection
+    formulaOptionSelect.selectedIndex = 0;
+  };
