@@ -1,0 +1,29 @@
+
+	  <p><label>Preliminary text (optional):<br />
+	      <textarea class="textBox fitb_prelim"></textarea></label> 
+	  </p>
+    
+          <p>
+	    <select class="fitb_blankSize" title="Students will be able to enter arbitrarily long answers in any blank size. This option affects how many characters they see at one time. Default is medium.">
+	      <option selected="selected" disabled="disabled">Answer blank length</option>
+	      <option>short</option>
+	      <option>medium</option>
+	      <option>long</option>
+	    </select>
+          </p>
+          <div class="fitb_qaPairs">
+	    <div class="fitb_qaPair">
+	      <span class="fitb_letter">a</span>.<br />
+              <label>Question:<br /><textarea class="fitb_question textBox"></textarea></label><br />
+              <label title="Only numeric and text string data types are supported currently.">Answer:<br /><input type="text" class="fitb_inBox fitb_answer" /></label>
+	      <p>
+		<button class="fitb_charButton" onclick="GUIWorK.fitb.addAnswer(this);" title="Add a question/answer part after this one.">+</button>
+		<button class="fitb_charButton" onclick="GUIWorK.fitb.delAnswer(this);" title="Remove this question/answer part.">-</button> 
+	      </p>
+	    </div>
+	  </div>
+	  <p><label title="For instance, write the word no here if all answers are 'yes' and you want WeBWorK to recognize 'no' as a valid, but incorrect, response.">Additional allowable input words/characters (separate with commas and/or spaces)<br />
+	      <input type="text" class="fitb_inBox fitb_allowableText" /></label>
+	  </p>
+
+
