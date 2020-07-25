@@ -3,7 +3,7 @@
 Each question type needs to supply
 -- template.html: HTML template in which user enters question data
 -- template.css:  CSS specifically for template.html
--- template.js:   javascript for processing within-question actions 
+-- template.js:   javascript for processing within-question actions
    (e.g., adding multiple choice answers) plus the following
    -- PGgen method on GUIWorK: code for generating initialization section
    (PG code) from question data provided by the user
@@ -21,57 +21,53 @@ Each question type needs to supply
 */
 
 /**
- * GUIWorK mcrb property contains all JavaScript code associated with
- * the multiple-choice/radio-button question type.
- * The code inherits from QuestionType, so it is only necessary to
- * override methods needing non-default behavior.
- */ 
-GUIWorK.mcrb = Object.create(GUIWorK.QuestionType.prototype);
+ * GUIWorK MultiChoiceDropDown property contains all JavaScript code associated with
+ * the multiple-choice/PopUp list (drop-down menu) question type.
+ * This is very similar to the mcrb (mutiple-choice radio button)
+ * code, except for the PG generation.
+ */
+GUIWorK.MultiChoiceDropDown = Object.create(GUIWorK.QuestionType.prototype);
 
-GUIWorK.mcrb.PGgen = 
+GUIWorK.MultiChoiceDropDown.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
-    var radioObject = '$mcrb_radio' + nQuestion;
-    outString += radioObject +' = RadioButtons( \n';
+    var popupObject = '$MultiChoiceDropDown_popup' + nQuestion;
+    outString += popupObject +' = PopUp( \n';
     outString += '  [ \n';
-    var answerBoxes = questionElt.getElementsByClassName("mcrb_inBox");
+    var answerBoxes = questionElt.getElementsByClassName("MultiChoiceDropDown_inBox");
     var answerStrings = new Array();
     for (i=0; i<answerBoxes.length; i++) {
       answerStrings[i] =
         encodeQuotes(encodeLaTeXMathModePG(answerBoxes[i].value));
     }
+    outString += '   "?", \n';
     for (i=0; i<answerBoxes.length; i++) {
       outString += '    "' + answerStrings[i] +'", \n';
     }
     outString += '  ], \n';
-    var selectAnswer = questionElt.getElementsByClassName("mcrb_selectAnswer")[0];
+    var selectAnswer = questionElt.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
     if (selectAnswer.selectedIndex == 0) {
       throw "Must select an answer for Question " + nQuestion;
     }
     var correctAnswer = selectAnswer.value;
-    outString += 
-      '  "' + answerStrings[correctAnswer.charCodeAt()-'a'.charCodeAt()] + '", \n';
-    outString += '  order=>[ \n';
-    for (i=0; i<answerBoxes.length; i++) {
-      outString += '    "' + answerStrings[i] +'", \n';
-    }
-    outString += '  ] \n';
+    outString +=
+      '  "' + answerStrings[correctAnswer.charCodeAt()-'a'.charCodeAt()] + '" \n';
     outString += '); \n';
 
     return outString;
   };
 
-GUIWorK.mcrb.PGMLgen = 
+GUIWorK.MultiChoiceDropDown.PGMLgen =
 function PGMLgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
 
-    var question = questionElt.getElementsByClassName("mcrb_question")[0];
-    var radioObject = '$mcrb_radio' + nQuestion;
+    var question = questionElt.getElementsByClassName("MultiChoiceDropDown_question")[0];
+    var popupObject = '$MultiChoiceDropDown_popup' + nQuestion;
     outString += encodeLaTeXMathModePGML(question.value) + '\n  \n';
-    outString += '[@ ANS(' + radioObject + '->cmp); ' 
-    	         + radioObject + '->buttons(); @]*\n';
+    outString += '[@ ANS(' + popupObject + '->cmp); '
+    	         + popupObject + '->menu(); @]*\n';
 
     return outString;
   };
@@ -79,7 +75,7 @@ function PGMLgen(questionElt) {
 /******* Event handlers ********/
 
   // Add an answer box following the current answer box.
-GUIWorK.mcrb.addAnswer = 
+GUIWorK.MultiChoiceDropDown.addAnswer =
 function addAnswer(textBox) {
     // Retrieve pointers to the current answer paragraph,
     // the div containing all answers, and
@@ -95,7 +91,7 @@ function addAnswer(textBox) {
     newAnswer.innerHTML = paragraph.innerHTML;
 
     // Clear the box (input element might have value attribute set).
-    var input = newAnswer.getElementsByClassName("mcrb_inBox")[0];
+    var input = newAnswer.getElementsByClassName("MultiChoiceDropDown_inBox")[0];
     input.value = '';
 
     // Increment the newly created answer's letter as well as
@@ -103,14 +99,14 @@ function addAnswer(textBox) {
     var nextNode = newAnswer;
     do {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("mcrb_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropDown_letter")[0];
        	  letterSpan.textContent = nextLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
     } while (nextNode);
 
     // Add an option to the correct-answer select menu
-    var selectAnswer = fieldset.getElementsByClassName("mcrb_selectAnswer")[0];
+    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
     var options = selectAnswer.options;
     var nOptions = options.length-1; // first "option" is disabled
     var newOptionText = String.fromCharCode('a'.charCodeAt()+nOptions) + ".";
@@ -120,11 +116,11 @@ function addAnswer(textBox) {
   };
 
   // Delete the current answer box.
-GUIWorK.mcrb.delAnswer = 
+GUIWorK.MultiChoiceDropDown.delAnswer =
 function delAnswer(textBox)
   {
     // Retrieve pointers to the current answer paragraph,
-    // the div containing all answers, 
+    // the div containing all answers,
     // the fieldset of the form containing this problem,
     // the next sibling following this answer paragraph,
     // the select containing the possible answer letters,
@@ -133,7 +129,7 @@ function delAnswer(textBox)
     var answerDiv = paragraph.parentNode;
     var fieldset = answerDiv.parentNode;
     var nextNode = paragraph.nextSibling;
-    var selectAnswer = fieldset.getElementsByClassName("mcrb_selectAnswer")[0];
+    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
     var options = selectAnswer.options;
 
     // Don't delete if there is only one option remaining.
@@ -149,7 +145,7 @@ function delAnswer(textBox)
     // Decrement the letters of all subsequent answers.
     while (nextNode) {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("mcrb_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropDown_letter")[0];
        	  letterSpan.textContent = prevLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
@@ -158,6 +154,3 @@ function delAnswer(textBox)
     // Remove an option from the correct-answer select menu
     selectAnswer.removeChild(options[options.length-1]);
   };
-
-
-  

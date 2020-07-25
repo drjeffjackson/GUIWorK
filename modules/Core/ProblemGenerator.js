@@ -15,7 +15,7 @@ function init() {
 // a file, while the menu definitions come from the configuration
 // defined in config.js.
 function loadBlankQ(continuation) {
-  inputFile("BlankQuestion.html",
+  inputFile("./BlankQuestion.html",
    	    function(connection)
 	      {loadBlankQContinuation(connection,continuation);}
 	    );
@@ -90,7 +90,7 @@ function addBlankQuestionContinuation(successor) {
     questionNum = getQuestionNum(successor);
   }
   setQuestionNum(newQuestion, questionNum);
-  for (i=questionNum; i<questions.length; i++) {
+  for (var i=questionNum; i<questions.length; i++) {
     deltaQuestionNum(questions[i], 1);
   }
 }
@@ -246,7 +246,7 @@ function questionTypeMenu(questionTypeSelect) {
   // Input HTML template for the specified question type.
   var options = questionTypeSelect.options;
   var qTypePrefix = options[questionTypeSelect.selectedIndex].getAttribute("name");
-  inputFile(qTypePrefix+"/template.html",
+  inputFile("../../"+qTypePrefix+"/template.html",
      function(connection) {questionTypeMenuContinue(questionTypeSelect, questionElt, connection)});
 }
 function questionTypeMenuContinue(questionTypeSelect, questionElt, connection) {
@@ -535,7 +535,7 @@ function encodeLaTeXMathModePG(aString) {
 // by calling continuation with the XMLHttpRequest object.
 // The responseText property of this object will have the url's content.
 function inputFile(url, continuation) {
-  connection = new XMLHttpRequest();
+  var connection = new XMLHttpRequest();
   connection.addEventListener("load",
     function () { continuation(connection); }
   );
@@ -550,5 +550,3 @@ const ProblemGenerator =  { init, loadBlankQ, loadBlankQContinuation, populateSe
 		 getQuestionTypePrefix, addInputValues, setQuestionNum, deltaQuestionNum, getQuestionNum,
 		 nextLetter, prevLetter, encodeQuotes, encodeLaTeXMathModePGML, encodeLaTeXMathModePG, inputFile
        }
-
-export { ProblemGenerator }

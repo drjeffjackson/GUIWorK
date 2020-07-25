@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>GUIWorK: WeBWorK Problem Generation Front-End</title>
+    <link rel="stylesheet" type="text/css" href="../css/GUIWorK.css" />
+	<script type="text/javascript" src="../config.js"></script>
+	<script type="text/javascript" src="../ProblemGenerator.js"></script>
+	<script type="text/javascript" src="../../MultiChoiceRadioButton/template.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="../../MultiChoiceRadioButton/template.css" />
+    <script type="text/javascript" src="../../MultiChoiceDropDown/template.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="../../MultiChoiceDropDown/template.css" />
+    <script type="text/javascript" src="../../MultiChoiceCheckbox/template.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="../../MultiChoiceCheckbox/template.css" />
+    <script type="text/javascript" src="../../FillInTheBlank/template.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="../../FillInTheBlank/template.css" />
+	<script type="text/javascript">
+		ProblemGenerator.init();
+	</script>
+  </head>
+  <body>
+
+    <div id="questionDiv">
+    </div>
+
+    <form onsubmit="return false;">
+      <fieldset>
+	<legend>Finalize</legend>
+	<button onclick="generatePGML(this);">Generate PGML code</button>
+	<br />
+	<textarea id="outBox" class="outBox"></textarea>
+      </fieldset>
+    </form>
+  </body>
+</html>

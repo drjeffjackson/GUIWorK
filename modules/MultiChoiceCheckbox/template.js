@@ -1,26 +1,26 @@
 /**
- * GUIWorK mccb property contains all JavaScript code associated with
+ * GUIWorK MultiChoiceCheckbox property contains all JavaScript code associated with
  * the multiple-choice/checkbox question type.
  * The code inherits from QuestionType, so it is only necessary to
  * override methods needing non-default behavior.
- */ 
-GUIWorK.mccb = Object.create(GUIWorK.QuestionType.prototype);
+ */
+GUIWorK.MultiChoiceCheckbox = Object.create(GUIWorK.QuestionType.prototype);
 
-GUIWorK.mccb.PGgen = 
+GUIWorK.MultiChoiceCheckbox.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
 
     // Create the checkbox object.
-    var checkboxObject = '$mccb_checkbox' + nQuestion;
+    var checkboxObject = '$MultiChoiceCheckbox_checkbox' + nQuestion;
     outString += checkboxObject +' = new_checkbox_multiple_choice(); \n';
 
     // Call qa method to add question and correct answer(s) to checkbox object.
     outString += checkboxObject + '->qa( \n';
-    var question = questionElt.getElementsByClassName("mccb_question")[0];
+    var question = questionElt.getElementsByClassName("MultiChoiceCheckbox_question")[0];
     outString += '  "'+encodeQuotes(encodeLaTeXMathModePG(question.value))+'", \n';
-    var answerCheckboxes = questionElt.getElementsByClassName("mccb_checkBox");
-    var answerBoxes = questionElt.getElementsByClassName("mccb_inBox");
+    var answerCheckboxes = questionElt.getElementsByClassName("MultiChoiceCheckbox_checkBox");
+    var answerBoxes = questionElt.getElementsByClassName("MultiChoiceCheckbox_inBox");
     var answerStrings = new Array();
     for (i=0; i<answerBoxes.length; i++) {
       answerStrings[i] =
@@ -48,17 +48,17 @@ function PGgen(questionElt) {
     return outString;
   };
 
-GUIWorK.mccb.PGMLgen = 
+GUIWorK.MultiChoiceCheckbox.PGMLgen =
 function PGMLgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
 
-    var intro = questionElt.getElementsByClassName("mccb_intro")[0];    
+    var intro = questionElt.getElementsByClassName("MultiChoiceCheckbox_intro")[0];
     outString += encodeLaTeXMathModePGML(intro.value)+'\n\n';
 
-    var checkboxObject = '$mccb_checkbox' + nQuestion;
+    var checkboxObject = '$MultiChoiceCheckbox_checkbox' + nQuestion;
     outString += '[@ ' + checkboxObject + '->print_q(); @]*  \n';
-    outString += '[@ ANS(checkbox_cmp(' + checkboxObject + '->correct_ans())); ' 
+    outString += '[@ ANS(checkbox_cmp(' + checkboxObject + '->correct_ans())); '
     	         + checkboxObject + '->print_a(); @]*\n';
 
     return outString;
@@ -67,7 +67,7 @@ function PGMLgen(questionElt) {
 /******* Event handlers ********/
 
   // Add an answer box following the current answer box.
-GUIWorK.mccb.addAnswer = 
+GUIWorK.MultiChoiceCheckbox.addAnswer =
 function addAnswer(textBox) {
     // Retrieve pointers to the current answer paragraph,
     // the div containing all answers, and
@@ -83,7 +83,7 @@ function addAnswer(textBox) {
     newAnswer.innerHTML = paragraph.innerHTML;
 
     // Clear the box (input element might have value attribute set).
-    var input = newAnswer.getElementsByClassName("mccb_inBox")[0];
+    var input = newAnswer.getElementsByClassName("MultiChoiceCheckbox_inBox")[0];
     input.value = '';
 
     // Increment the newly created answer's letter as well as
@@ -91,7 +91,7 @@ function addAnswer(textBox) {
     var nextNode = newAnswer;
     do {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("mccb_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceCheckbox_letter")[0];
        	  letterSpan.textContent = nextLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
@@ -99,18 +99,18 @@ function addAnswer(textBox) {
   };
 
   // Delete the current answer box.
-GUIWorK.mccb.delAnswer = 
+GUIWorK.MultiChoiceCheckbox.delAnswer =
 function delAnswer(textBox)
   {
     // Retrieve pointers to the current answer paragraph,
-    // the div containing all answers, 
+    // the div containing all answers,
     // the next sibling following this answer paragraph.
     var paragraph = textBox.parentNode;
     var answerDiv = paragraph.parentNode;
     var nextNode = paragraph.nextSibling;
 
     // Don't delete if there is only one answer remaining.
-    if (answerDiv.getElementsByClassName("mccb_inBox").length <= 1) {
+    if (answerDiv.getElementsByClassName("MultiChoiceCheckbox_inBox").length <= 1) {
        window.alert("Cannot delete last remaining answer.");
        return;
     }
@@ -121,12 +121,9 @@ function delAnswer(textBox)
     // Decrement the letters of all subsequent answers.
     while (nextNode) {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("mccb_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceCheckbox_letter")[0];
        	  letterSpan.textContent = prevLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
     }
   };
-
-
-  

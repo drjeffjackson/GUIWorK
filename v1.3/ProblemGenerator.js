@@ -15,8 +15,8 @@ function init() {
 // a file, while the menu definitions come from the configuration
 // defined in config.js.
 function loadBlankQ(continuation) {
-  inputFile("BlankQuestion.html", 
-   	    function(connection) 
+  inputFile("BlankQuestion.html",
+   	    function(connection)
 	      {loadBlankQContinuation(connection,continuation);}
 	    );
 }
@@ -186,7 +186,7 @@ function moveQuestionEarlier(actionSelect, questionElt, questionDiv) {
     questionDiv.removeChild(questionElt);
     questionDiv.insertBefore(questionElt, prevNode);
     setQuestionNum(questionElt,nQuestion-1);
-    setQuestionNum(prevNode,nQuestion);  
+    setQuestionNum(prevNode,nQuestion);
   }
 }
 
@@ -246,7 +246,7 @@ function questionTypeMenu(questionTypeSelect) {
   // Input HTML template for the specified question type.
   var options = questionTypeSelect.options;
   var qTypePrefix = options[questionTypeSelect.selectedIndex].getAttribute("name");
-  inputFile(qTypePrefix+"/template.html", 
+  inputFile(qTypePrefix+"/template.html",
      function(connection) {questionTypeMenuContinue(questionTypeSelect, questionElt, connection)});
 }
 function questionTypeMenuContinue(questionTypeSelect, questionElt, connection) {
@@ -420,7 +420,7 @@ function generateQuestionCode(questionElt, genFuncString) {
 // wrong with retrieving the prefix name from the question HTML
 // (internal error).
 function getQuestionTypePrefix(questionElt) {
-  var qTypeSelect = questionElt.getElementsByClassName("questionTypeMenu")[0]; 
+  var qTypeSelect = questionElt.getElementsByClassName("questionTypeMenu")[0];
   var qTypeIndex = qTypeSelect.selectedIndex;
   var qType = null;
   if (qTypeIndex > 0) {
@@ -441,7 +441,7 @@ function addInputValues(element) {
     var input = inputs[i];
     var inputType = input.getAttribute("type");
     if (inputType == "text") {
-      input.setAttribute("value", input.value);    
+      input.setAttribute("value", input.value);
     }
     else if (inputType == "checkbox") {
       if (input.checked) {
@@ -516,7 +516,7 @@ function encodeQuotes(aString) {
   return aString.replace(/\"/g, "&quot;"); // used \" rather than " for Emacs
 }
 
-// Replace unescaped $...$ or $$...$$ (LaTeX inline/display math mode markings) 
+// Replace unescaped $...$ or $$...$$ (LaTeX inline/display math mode markings)
 // with [`...`] or \n>>[``...``]<<\n (PGML math mode markings).
 function encodeLaTeXMathModePGML(aString) {
   var regex1 = /(^|[^\\])\$([^]*?)([^\\])\$/g;
@@ -536,11 +536,10 @@ function encodeLaTeXMathModePG(aString) {
 // The responseText property of this object will have the url's content.
 function inputFile(url, continuation) {
   connection = new XMLHttpRequest();
-  connection.addEventListener("load", 
+  connection.addEventListener("load",
     function () { continuation(connection); }
   );
   connection.responseType = "text";
   connection.open("GET", url, true);
   connection.send();
 }
-

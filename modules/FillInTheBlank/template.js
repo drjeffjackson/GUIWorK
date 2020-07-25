@@ -13,37 +13,37 @@
 //   functions (handy for sequence representation).
 
 /**
- * GUIWorK fitb property contains all JavaScript code associated with
+ * GUIWorK FillInTheBlank property contains all JavaScript code associated with
  * the fill-in-the-blank question type.
  * Attempts to automatically extract strings from lists and one-letter
  * variables from formulas and add these to appropriate Context.
  * The code inherits from QuestionType.
- */ 
-GUIWorK.fitb = Object.create(GUIWorK.QuestionType.prototype);
+ */
+GUIWorK.FillInTheBlank = Object.create(GUIWorK.QuestionType.prototype);
 
 // First call to PGgen for a new problem generation.
-GUIWorK.fitb.firstPGgenCall = true;
+GUIWorK.FillInTheBlank.firstPGgenCall = true;
 
 // Various answer checker options with default values
-GUIWorK.fitb.opt_form_combinatorics = false;
+GUIWorK.FillInTheBlank.opt_form_combinatorics = false;
 
 // Tell PGgen to clear the contextStrings array in preparation for
 // generating fresh code for the problem.
 
 // NOTE: Default WeBWorK strings are
-//   DNE,INF,INFINITY,NONE,inf,infinity 
+//   DNE,INF,INFINITY,NONE,inf,infinity
 // We're also telling WeBWorK to clear these, so they are only
 // available if explicitly given as an answer or specified by the
 // user as allowable strings.
-GUIWorK.fitb.init = 
+GUIWorK.FillInTheBlank.init =
 function init() {
-  GUIWorK.fitb.firstPGgenCall = true;
+  GUIWorK.FillInTheBlank.firstPGgenCall = true;
 };
 
 // Add all answer Strings, including those embedded within Lists,
 // along with any additional explicitly specified strings, to Context.
 // Also add all one-character variable names within formulas to Context.
-GUIWorK.fitb.PGgen =
+GUIWorK.FillInTheBlank.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
@@ -53,22 +53,22 @@ function PGgen(questionElt) {
     // If first call for a new problem generation, create empty string
     // and variable arrays and tell WeBWorK to clear its strings and
     // variables from Context.
-    if (GUIWorK.fitb.firstPGgenCall) {
-      GUIWorK.fitb.contextStrings = new GUIWorK.Set();
-      GUIWorK.fitb.contextVariables = new GUIWorK.Set();
+    if (GUIWorK.FillInTheBlank.firstPGgenCall) {
+      GUIWorK.FillInTheBlank.contextStrings = new GUIWorK.Set();
+      GUIWorK.FillInTheBlank.contextVariables = new GUIWorK.Set();
       outString += 'Context()->strings->are();\n';
       outString += 'Context()->variables->are();\n';
-      GUIWorK.fitb.firstPGgenCall = false;
+      GUIWorK.FillInTheBlank.firstPGgenCall = false;
 
       // If combinatorics option selected, generate the functions.
-      if (GUIWorK.fitb.opt_form_combinatorics) {
+      if (GUIWorK.FillInTheBlank.opt_form_combinatorics) {
         outString += 'Context()->variables->add(n=>"Real",r=>"Real");\n';
         outString += 'parserFunction("C(n,r)"=>"n!/((n-r)!*r!)");\n';
         outString += 'parserFunction("P(n,r)"=>"n!/(n-r)!");\n';
-        GUIWorK.fitb.contextVariables.include('n');
-        GUIWorK.fitb.contextVariables.include('r');
-        GUIWorK.fitb.contextVariables.include('C');
-        GUIWorK.fitb.contextVariables.include('P');
+        GUIWorK.FillInTheBlank.contextVariables.include('n');
+        GUIWorK.FillInTheBlank.contextVariables.include('r');
+        GUIWorK.FillInTheBlank.contextVariables.include('C');
+        GUIWorK.FillInTheBlank.contextVariables.include('P');
       }
     }
 
@@ -76,8 +76,8 @@ function PGgen(questionElt) {
     // later questions will not attempt to also add them to context.
     // Similarly, extract variable names from formulas.
     // Throw error if any answers are blank.
-    var answerElts = questionElt.getElementsByClassName("fitb_answer");
-    var answerTypeElts = questionElt.getElementsByClassName("fitb_ansType");
+    var answerElts = questionElt.getElementsByClassName("FillInTheBlank_answer");
+    var answerTypeElts = questionElt.getElementsByClassName("FillInTheBlank_ansType");
     for (var i=0; i<answerElts.length; i++) {
       var answer = answerElts[i].value.trim();
       var selectAnswerType = answerTypeElts[i];
@@ -85,7 +85,7 @@ function PGgen(questionElt) {
         throw "Question " + nQuestion + " has a blank answer.";
       }
       if (selectAnswerType.value == "String" ||
-          (selectAnswerType.selectedIndex == 0 && GUIWorK.fitb.isLetters(answer))) {
+          (selectAnswerType.selectedIndex == 0 && GUIWorK.FillInTheBlank.isLetters(answer))) {
          stringList.include(answer);
       }
       // Find all of the (one-letter) variables in this formula.
@@ -105,23 +105,23 @@ function PGgen(questionElt) {
         var elements = answer.split(/[,\(\[\{\}\]\)]/);
         for (var w=0; w<elements.length; w++) {
            element = elements[w].trim();
-           if (GUIWorK.fitb.isLetters(element)) {
+           if (GUIWorK.FillInTheBlank.isLetters(element)) {
               stringList.include(element);
            }
         }
       }
-      // Check for Matrix type. Matrix value needs to be wrapped in 
+      // Check for Matrix type. Matrix value needs to be wrapped in
       // Matrix Context, at least in ww_version 2.12.
       else if (selectAnswerType.value == "Matrix") {
         outString += 'Context("Matrix");\n';
-        outString += GUIWorK.fitb.matrixVar(nQuestion,i) 
+        outString += GUIWorK.FillInTheBlank.matrixVar(nQuestion,i)
                      + ' = Matrix(' + answer + ');\n';
         outString += 'Context("Numeric");\n';
       }
     }
     // Add any additional legal-answer strings to the list of
     // recognized answers.
-    var allowableText = questionElt.getElementsByClassName("fitb_allowableText")[0].value;
+    var allowableText = questionElt.getElementsByClassName("FillInTheBlank_allowableText")[0].value;
     if (!(/^[,|\s]*$/.test(allowableText))) { // not merely separator chars
       var additionalStringList = allowableText.split(/\s+|\s*,\s*/);
       for (var i=0; i<additionalStringList.length; i++) {
@@ -131,17 +131,17 @@ function PGgen(questionElt) {
     }
     // Reduce string and variable lists to those that are new
     // to the overall problem and update the problem lists.
-    stringList = stringList.diff(GUIWorK.fitb.contextStrings);
-    varList = varList.diff(GUIWorK.fitb.contextVariables);
-    GUIWorK.fitb.contextStrings = GUIWorK.fitb.contextStrings.union(stringList);
-    GUIWorK.fitb.contextVariables = GUIWorK.fitb.contextVariables.union(varList);
+    stringList = stringList.diff(GUIWorK.FillInTheBlank.contextStrings);
+    varList = varList.diff(GUIWorK.FillInTheBlank.contextVariables);
+    GUIWorK.FillInTheBlank.contextStrings = GUIWorK.FillInTheBlank.contextStrings.union(stringList);
+    GUIWorK.FillInTheBlank.contextVariables = GUIWorK.FillInTheBlank.contextVariables.union(varList);
 
     // Add new answer and variable strings to the context so that
     // WeBWorK will recognize them.
     if (stringList.length > 0) {
       outString += 'Context()->strings->add(';
       for (var i=0; i<stringList.length; i++) {
-        outString += stringList[i] + '=>{},'; 
+        outString += stringList[i] + '=>{},';
       }
       outString += ');\n';
     }
@@ -156,19 +156,19 @@ function PGgen(questionElt) {
   };
 
   // Add the question/answer-blank pairs to this question
-GUIWorK.fitb.PGMLgen =
+GUIWorK.FillInTheBlank.PGMLgen =
 function PGMLgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
 
     // First output any preliminary text.
-    var prelimText = questionElt.getElementsByClassName("fitb_prelim")[0].value;
+    var prelimText = questionElt.getElementsByClassName("FillInTheBlank_prelim")[0].value;
     outString += encodeLaTeXMathModePGML(prelimText);
     outString += '\n\n';
 
-    
+
     // Next output the question/answer-blank pairs
-    var blankSizeText = questionElt.getElementsByClassName("fitb_blankSize")[0].value;
+    var blankSizeText = questionElt.getElementsByClassName("FillInTheBlank_blankSize")[0].value;
     var blankText = '[_______________]'; // default blank is medium length
     if (blankSizeText=="short") {
       blankText = '[_]';
@@ -176,15 +176,15 @@ function PGMLgen(questionElt) {
     else if (blankSizeText=="long") {
       blankText = '[________________________________________________________]';
     }
-    var qaPairs = questionElt.getElementsByClassName("fitb_qaPair");
+    var qaPairs = questionElt.getElementsByClassName("FillInTheBlank_qaPair");
     for (var i=0; i<qaPairs.length; i++) {
       var qaPair = qaPairs[i];
-      outString += '*' + qaPair.getElementsByClassName("fitb_letter")[0].textContent + ")* ";
-      outString += encodeLaTeXMathModePGML(qaPair.getElementsByClassName("fitb_question")[0].value);
+      outString += '*' + qaPair.getElementsByClassName("FillInTheBlank_letter")[0].textContent + ")* ";
+      outString += encodeLaTeXMathModePGML(qaPair.getElementsByClassName("FillInTheBlank_question")[0].value);
       outString += '\n  ';
       outString += blankText;
-      var rawAnswer = qaPair.getElementsByClassName("fitb_answer")[0].value;
-      var selectAnswerType = qaPair.getElementsByClassName("fitb_ansType")[0];
+      var rawAnswer = qaPair.getElementsByClassName("FillInTheBlank_answer")[0].value;
+      var selectAnswerType = qaPair.getElementsByClassName("FillInTheBlank_ansType")[0];
 
       // If no answer type specified, let WeBWorK try to figure it out by
       // simply quoting the answer.  If Matrix type, use matrix variable
@@ -195,35 +195,35 @@ function PGMLgen(questionElt) {
         outString += '{"' + rawAnswer + '"';
       }
       else if (selectAnswerType.value == "Matrix") {
-        outString += '*{' + GUIWorK.fitb.matrixVar(nQuestion,i);
+        outString += '*{' + GUIWorK.FillInTheBlank.matrixVar(nQuestion,i);
       }
       else {
         outString += '{' + selectAnswerType.value + '("' + rawAnswer + '")';
       }
       outString += '}\n\n';
-    }    
+    }
     return outString;
   };
 
 /******* Utilities *******/
 
-GUIWorK.fitb.isLetters =
+GUIWorK.FillInTheBlank.isLetters =
 function isLetters(answer) {
   return /^[A-Za-z]+$/.test(answer);
 }
 
 // Passed question number and 0-based number of the part of the
 // question, returns Perl variable unique to this question and part.
-GUIWorK.fitb.matrixVar = 
+GUIWorK.FillInTheBlank.matrixVar =
 function matrixVar(question, part) {
-  return "$fitb_matQ" + question 
+  return "$FillInTheBlank_matQ" + question
          + String.fromCharCode('a'.charCodeAt(0) + part);
 }
 
 /******* Event handlers ********/
 
 // Add a question/answer pair after the current q/a pair.
-GUIWorK.fitb.addAnswer = 
+GUIWorK.FillInTheBlank.addAnswer =
 function addAnswer(addButton) {
     // Retrieve pointers to the current q/a div and
     // the div containing all q/a pairs.
@@ -237,9 +237,9 @@ function addAnswer(addButton) {
 
     // Clear the question and answer boxes (input elements might have
     // value attributes set).
-    var question = newQaDiv.getElementsByClassName("fitb_question")[0];
+    var question = newQaDiv.getElementsByClassName("FillInTheBlank_question")[0];
     question.value = '';
-    var answer = newQaDiv.getElementsByClassName("fitb_answer")[0];
+    var answer = newQaDiv.getElementsByClassName("FillInTheBlank_answer")[0];
     answer.value = '';
 
     // Increment the newly created div's letter as well as
@@ -247,7 +247,7 @@ function addAnswer(addButton) {
     var nextNode = newQaDiv;
     do {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-          var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
+          var letterSpan = nextNode.getElementsByClassName("FillInTheBlank_letter")[0];
           letterSpan.textContent = nextLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
@@ -255,7 +255,7 @@ function addAnswer(addButton) {
   };
 
   // Delete the current answer box.
-GUIWorK.fitb.delAnswer = 
+GUIWorK.FillInTheBlank.delAnswer =
 function delAnswer(delButton)
   {
     // Retrieve pointers to the current q/a div and
@@ -276,7 +276,7 @@ function delAnswer(delButton)
     // Decrement the letters of all subsequent answers.
     while (nextNode) {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-          var letterSpan = nextNode.getElementsByClassName("fitb_letter")[0];
+          var letterSpan = nextNode.getElementsByClassName("FillInTheBlank_letter")[0];
           letterSpan.textContent = prevLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
@@ -285,37 +285,37 @@ function delAnswer(delButton)
 
 // Update UI in response to the answer type selected.
 // For instance, add option menu for Formula answer type.
-GUIWorK.fitb.answerTypeMenu = 
-function answerTypeMenu(answerTypeSelect) 
+GUIWorK.FillInTheBlank.answerTypeMenu =
+function answerTypeMenu(answerTypeSelect)
   {
     var aType = answerTypeSelect.value;
-    var formulaOptElt = 
+    var formulaOptElt =
         answerTypeSelect.parentNode.
-          getElementsByClassName("fitb_options_formula")[0];
+          getElementsByClassName("FillInTheBlank_options_formula")[0];
     if (aType == "Formula") {
       formulaOptElt.style.setProperty("display", "inline", "");
     }
     else {
-      formulaOptElt.style.setProperty("display", "none", "");      
+      formulaOptElt.style.setProperty("display", "none", "");
     }
   };
 
 // A selection has been made in the formula options menu.
 // Toggle the selected option.
-GUIWorK.fitb.formulaOption =
+GUIWorK.FillInTheBlank.formulaOption =
 function formulaOption(formulaOptionSelect)
   {
     var selectedIndex = formulaOptionSelect.selectedIndex;
-    var formulaOptionName = 
+    var formulaOptionName =
         formulaOptionSelect[selectedIndex].getAttribute("name");
-    if (formulaOptionName == "fitb_opt_form_combinatorics") {
-      GUIWorK.fitb.opt_form_combinatorics = !GUIWorK.fitb.opt_form_combinatorics;
+    if (formulaOptionName == "FillInTheBlank_opt_form_combinatorics") {
+      GUIWorK.FillInTheBlank.opt_form_combinatorics = !GUIWorK.FillInTheBlank.opt_form_combinatorics;
     }
     // Update menu text to reflect status of option selection
     var formulaOptionElt = formulaOptionSelect[selectedIndex];
     var optionText = formulaOptionElt.textContent;
-    var leadingSymbol = GUIWorK.fitb.opt_form_combinatorics ? '+' : '-';
-    formulaOptionElt.textContent = 
+    var leadingSymbol = GUIWorK.FillInTheBlank.opt_form_combinatorics ? '+' : '-';
+    formulaOptionElt.textContent =
        leadingSymbol + optionText.slice(1,optionText.length);
 
     // Reset the selection

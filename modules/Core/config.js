@@ -25,25 +25,25 @@
  * be added later by other code for each supported question type)
  */
 var GUIWorK = {
-    VERSION: '1.3',
+    VERSION: '1.4',
     blankQuestion: null,
     config: new Object(),
     QuestionType: new Object(),
 };
 
 /**
- Question type menu, defined on GUIWorK.config.  
+ Question type menu, defined on GUIWorK.config.
 
  The text shown in the menu and/or the order of menu items can be
  customized.
 
  Prefix name of "" (empty string) displays but disables the option.
  HTML, CSS and JavaScript code for the question type is stored in
- folder having the prefix name.  
+ folder having the prefix name.
 
  Text of ----------- is a separator in the menu.
 */
-GUIWorK.config.questionTypeMenu = 
+GUIWorK.config.questionTypeMenu =
 [
   {
     text: "Question type",
@@ -51,19 +51,19 @@ GUIWorK.config.questionTypeMenu =
   },
   {
     text: "Multiple choice (radio button)",
-    name: "mcrb"
+    name: "MultiChoiceRadioButton"
   },
   {
     text: "Multiple choice (drop-down)",
-    name: "mcpu"
+    name: "MultiChoiceDropdown"
   },
   {
     text: "Multiple choice (checkbox)",
-    name: "mccb"
+    name: "MultiChoiceCheckbox"
   },
   {
     text: "Fill in the blank",
-    name: "fitb"
+    name: "FillInTheBlank"
   },
   {
     text: "--------------------------",
@@ -87,7 +87,7 @@ GUIWorK.config.questionTypeMenu =
 
  Text of ----------- is a separator in the menu.
 */
-GUIWorK.config.actionMenu = 
+GUIWorK.config.actionMenu =
 [
   {
     text: "Action menu",
@@ -136,7 +136,7 @@ GUIWorK.QuestionType.prototype = new Object();
 /**
  Called to allow initialization for the question type to be
  performed prior to any code being generated for questions of this type.
- Note that the init() method for a given question type will be called 
+ Note that the init() method for a given question type will be called
  multiple times before PGgen is called if the question type appears
  multiple times in the problem.
  No return value, does nothing by default.
@@ -172,7 +172,7 @@ function PGMLgen(questionElt) {
 //     not in the argument Set
 //   - union(set)
 //   - intersection(set)
-//   - include(item): push item on the end of the array iff item 
+//   - include(item): push item on the end of the array iff item
 //     is not already in this Set.
 // ***********
 
@@ -182,7 +182,7 @@ GUIWorK.Set = function() {
 
 GUIWorK.Set.prototype = Object.create(Array.prototype);
 
-GUIWorK.Set.prototype.include = 
+GUIWorK.Set.prototype.include =
 function include(item) {
   if (!this.includes(item)) {
     this.push(item);
@@ -198,10 +198,10 @@ function union(set) {
   for (var i=0; i<set.length; i++) {
     retSet.include(set[i]);
   }
-  return retSet;   
+  return retSet;
 };
 
-GUIWorK.Set.prototype.intersection = 
+GUIWorK.Set.prototype.intersection =
 function intersection(set) {
   var retSet = new GUIWorK.Set();
   for (var i=0; i<this.length; i++) {
@@ -212,7 +212,7 @@ function intersection(set) {
   return retSet;
 };
 
-GUIWorK.Set.prototype.diff = 
+GUIWorK.Set.prototype.diff =
 function diff(set) {
   var retSet = new GUIWorK.Set();
   for (var i=0; i<this.length; i++) {
@@ -220,6 +220,9 @@ function diff(set) {
       retSet.push(this[i]);
     }
   }
-  return retSet;   
+  return retSet;
 };
 
+GUIWorK.init = function(){
+	location.assign('./modules/core/htdocs/ProblemGenerator.html');
+}
