@@ -21,21 +21,21 @@ Each question type needs to supply
 */
 
 /**
- * GUIWorK MultiChoiceDropDown property contains all JavaScript code associated with
+ * GUIWorK MultiChoiceDropdown property contains all JavaScript code associated with
  * the multiple-choice/PopUp list (drop-down menu) question type.
  * This is very similar to the mcrb (mutiple-choice radio button)
  * code, except for the PG generation.
  */
-GUIWorK.MultiChoiceDropDown = Object.create(GUIWorK.QuestionType.prototype);
+GUIWorK.MultiChoiceDropdown = Object.create(GUIWorK.QuestionType.prototype);
 
-GUIWorK.MultiChoiceDropDown.PGgen =
+GUIWorK.MultiChoiceDropdown.PGgen =
 function PGgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
-    var popupObject = '$MultiChoiceDropDown_popup' + nQuestion;
+    var popupObject = '$MultiChoiceDropdown_popup' + nQuestion;
     outString += popupObject +' = PopUp( \n';
     outString += '  [ \n';
-    var answerBoxes = questionElt.getElementsByClassName("MultiChoiceDropDown_inBox");
+    var answerBoxes = questionElt.getElementsByClassName("MultiChoiceDropdown_inBox");
     var answerStrings = new Array();
     for (i=0; i<answerBoxes.length; i++) {
       answerStrings[i] =
@@ -46,7 +46,7 @@ function PGgen(questionElt) {
       outString += '    "' + answerStrings[i] +'", \n';
     }
     outString += '  ], \n';
-    var selectAnswer = questionElt.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
+    var selectAnswer = questionElt.getElementsByClassName("MultiChoiceDropdown_selectAnswer")[0];
     if (selectAnswer.selectedIndex == 0) {
       throw "Must select an answer for Question " + nQuestion;
     }
@@ -58,13 +58,13 @@ function PGgen(questionElt) {
     return outString;
   };
 
-GUIWorK.MultiChoiceDropDown.PGMLgen =
+GUIWorK.MultiChoiceDropdown.PGMLgen =
 function PGMLgen(questionElt) {
     var outString = '';
     var nQuestion = getQuestionNum(questionElt);
 
-    var question = questionElt.getElementsByClassName("MultiChoiceDropDown_question")[0];
-    var popupObject = '$MultiChoiceDropDown_popup' + nQuestion;
+    var question = questionElt.getElementsByClassName("MultiChoiceDropdown_question")[0];
+    var popupObject = '$MultiChoiceDropdown_popup' + nQuestion;
     outString += encodeLaTeXMathModePGML(question.value) + '\n  \n';
     outString += '[@ ANS(' + popupObject + '->cmp); '
     	         + popupObject + '->menu(); @]*\n';
@@ -75,7 +75,7 @@ function PGMLgen(questionElt) {
 /******* Event handlers ********/
 
   // Add an answer box following the current answer box.
-GUIWorK.MultiChoiceDropDown.addAnswer =
+GUIWorK.MultiChoiceDropdown.addAnswer =
 function addAnswer(textBox) {
     // Retrieve pointers to the current answer paragraph,
     // the div containing all answers, and
@@ -91,7 +91,7 @@ function addAnswer(textBox) {
     newAnswer.innerHTML = paragraph.innerHTML;
 
     // Clear the box (input element might have value attribute set).
-    var input = newAnswer.getElementsByClassName("MultiChoiceDropDown_inBox")[0];
+    var input = newAnswer.getElementsByClassName("MultiChoiceDropdown_inBox")[0];
     input.value = '';
 
     // Increment the newly created answer's letter as well as
@@ -99,14 +99,14 @@ function addAnswer(textBox) {
     var nextNode = newAnswer;
     do {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropDown_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropdown_letter")[0];
        	  letterSpan.textContent = nextLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
     } while (nextNode);
 
     // Add an option to the correct-answer select menu
-    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
+    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropdown_selectAnswer")[0];
     var options = selectAnswer.options;
     var nOptions = options.length-1; // first "option" is disabled
     var newOptionText = String.fromCharCode('a'.charCodeAt()+nOptions) + ".";
@@ -116,7 +116,7 @@ function addAnswer(textBox) {
   };
 
   // Delete the current answer box.
-GUIWorK.MultiChoiceDropDown.delAnswer =
+GUIWorK.MultiChoiceDropdown.delAnswer =
 function delAnswer(textBox)
   {
     // Retrieve pointers to the current answer paragraph,
@@ -129,7 +129,7 @@ function delAnswer(textBox)
     var answerDiv = paragraph.parentNode;
     var fieldset = answerDiv.parentNode;
     var nextNode = paragraph.nextSibling;
-    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropDown_selectAnswer")[0];
+    var selectAnswer = fieldset.getElementsByClassName("MultiChoiceDropdown_selectAnswer")[0];
     var options = selectAnswer.options;
 
     // Don't delete if there is only one option remaining.
@@ -145,7 +145,7 @@ function delAnswer(textBox)
     // Decrement the letters of all subsequent answers.
     while (nextNode) {
        if (nextNode.nodeType == Node.ELEMENT_NODE) {
-       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropDown_letter")[0];
+       	  var letterSpan = nextNode.getElementsByClassName("MultiChoiceDropdown_letter")[0];
        	  letterSpan.textContent = prevLetter(letterSpan.textContent);
        }
        nextNode = nextNode.nextSibling;
