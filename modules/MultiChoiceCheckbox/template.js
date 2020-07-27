@@ -1,3 +1,4 @@
+import { GUIWorK } from "../Core/config.js"
 /**
  * GUIWorK MultiChoiceCheckbox property contains all JavaScript code associated with
  * the multiple-choice/checkbox question type.

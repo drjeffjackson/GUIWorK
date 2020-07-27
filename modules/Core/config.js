@@ -224,5 +224,14 @@ function diff(set) {
 };
 
 GUIWorK.init = function(){
-	location.assign('./modules/core/htdocs/ProblemGenerator.html');
+	var connection = new XMLHttpRequest();
+	connection.addEventListener("load",
+	  function () { document.body.innerHTML= this.responseText; }
+	);
+	connection.responseType = "text";
+	connection.open("GET", './modules/core/htdocs/ProblemGenerator.html', true);
+	connection.send();
+
 }
+
+export { GUIWorK };

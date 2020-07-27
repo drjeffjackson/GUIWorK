@@ -1,13 +1,13 @@
 // 1.3 version of ProblemGenerator.js
-
+var GUIWorK;
 // Initialization (called on initial load of page body).  Create a div
 // representing a blank question.  Then add the question to the page.
-function init() {
-
+function init(GUIWorK_) {
   // Input blank question div.  There will be an asynchronous aspect
   // because we're loading some information from a file.  Processing
   // eventually continues by adding a blank question to the end of the
   // questions div.
+  GUIWorK = GUIWorK_;
   loadBlankQ( function() {addBlankQuestion(null);} );
 }
 
@@ -15,7 +15,7 @@ function init() {
 // a file, while the menu definitions come from the configuration
 // defined in config.js.
 function loadBlankQ(continuation) {
-  inputFile("./BlankQuestion.html",
+  inputFile("./modules/Core/htdocs/BlankQuestion.html",
    	    function(connection)
 	      {loadBlankQContinuation(connection,continuation);}
 	    );
@@ -544,9 +544,11 @@ function inputFile(url, continuation) {
   connection.send();
 }
 
-const ProblemGenerator =  { init, loadBlankQ, loadBlankQContinuation, populateSelect, addBlankQuestion, addBlankQuestionContinuation,
+var ProblemGenerator =  { init, loadBlankQ, loadBlankQContinuation, populateSelect, addBlankQuestion, addBlankQuestionContinuation,
 		 actionMenu, addBlankBefore, addBlankAfter, dupQuestion, moveQuestionEarlier, moveQuestionLater,
-		 delQuestion, questionTypeMenu, questionTypeMenuContinue, generatePGML,generateQuestionCode,
+		 delQuestion, questionTypeMenu, questionTypeMenuContinue, generatePGML, generateQuestionCode,
 		 getQuestionTypePrefix, addInputValues, setQuestionNum, deltaQuestionNum, getQuestionNum,
 		 nextLetter, prevLetter, encodeQuotes, encodeLaTeXMathModePGML, encodeLaTeXMathModePG, inputFile
        }
+
+export { ProblemGenerator };

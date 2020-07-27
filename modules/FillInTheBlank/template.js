@@ -1,3 +1,4 @@
+import { GUIWorK } from "../Core/config.js"
 // TODO: FIX BUGS WITH OPTIONS.
 // -- The drop-down is repeated, so it can show + in some questions/parts
 //    and - in other questions/parts.

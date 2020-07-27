@@ -1,4 +1,4 @@
-
+import { GUIWorK } from "../Core/config.js"
 /*
 Each question type needs to supply
 -- template.html: HTML template in which user enters question data
